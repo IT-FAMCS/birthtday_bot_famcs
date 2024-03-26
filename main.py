@@ -98,6 +98,7 @@ def check_holidays():
     today = datetime.datetime.now()
     for holiday in holidays:
         day, month, message = holiday
+        message += ' '
         if today.month == month and today.day == day:
             if day == 8 and month == 3:
                 message += combine_women_usernames()
