@@ -61,57 +61,51 @@ def check_birthdays():
                 bot.send_message(chat_id=GROUP_CHAT_ID, text=message)
 
 
-def defineAllUsernames():
+def combine_usernames():
     people = parse_birthdays()
-    allPeople = ''
-    for name, username, dob, sex in people:
-        allPeople += username + ' '
-    return allPeople
+    all_usernames = ' '.join([username for name, username, dob, sex in people])
+    return all_usernames
 
 
-def check_holiday(day, month, message):
-    today = datetime.datetime.now()
-    if today.month == month and today.day == day:
-        bot.send_message(chat_id=GROUP_CHAT_ID, text=defineAllUsernames() + message)
+def combine_women_usernames():
+    people = parse_birthdays()
+    all_usernames = ' '.join([username for name, username, dob, sex in people if sex == 'f'])
+    return all_usernames
+
+
+def combine_men_usernames():
+    people = parse_birthdays()
+    all_usernames = ' '.join([username for name, username, dob, sex in people if sex == 'm'])
+    return all_usernames
+
+
+holidays = [
+    [1, 9, 'С 1 сентября!'],
+    [9, 5, 'С 9 мая!'],
+    [1, 5, 'С 1 мая!'],
+    [5, 5, 'Счастливой пасхи!'],
+    [20, 6, 'С Ивана Купала!'],
+    [1, 4, 'С днем дурака!'],
+    [1, 1, 'С новым годом!'],
+    [7, 1, 'С православным рождеством!'],
+    [25, 12, 'С католическим рождеством!'],
+    [8, 3, 'С 8 марта!'],
+    [23, 2, 'С 23 февраля!']
+]
 
 
 def check_holidays():
-    check_holiday(1, 9, 'С 1 сентября!')
-    check_holiday(9, 5, 'С 9 мая!')
-    check_holiday(1, 5, 'С 1 мая!')
-    check_holiday(5, 5, 'Счастливой пасхи!')
-    check_holiday(20, 6, 'С Ивана Купала!')
-    check_holiday(1, 4, 'С днем дурака!')
-    check_holiday(1, 1, 'С новым годом!')
-    check_holiday(7, 1, 'С православным рождеством!')
-    check_holiday(25, 12, 'С католическим рождеством!')
-    check_holiday(1, 9, 'С 1 сентября!')
-
-
-def check_8_march():
     today = datetime.datetime.now()
-    birthdays = parse_birthdays()
-
-    for name, username, dob, sex in birthdays:
-        year, month, day = dob.split("-")
-        date = datetime.date(int(year), int(month), int(day))
-
-        if date.day == 8 and date.month == 3:
-            if sex == 'f':
-                bot.send_message(chat_id=GROUP_CHAT_ID, text=f'{username}, c 8 марта!')
-
-
-def check_23_feb():
-    today = datetime.datetime.now()
-    people = parse_birthdays()
-
-    for name, username, dob, sex in people:
-        year, month, day = dob.split("-")
-        date = datetime.date(int(year), int(month), int(day))
-
-        if date.day == 23 and date.month == 2:
-            if sex == 'm':
-                bot.send_message(chat_id=GROUP_CHAT_ID, text=f'{username}, c 23 февраля!')
+    for holiday in holidays:
+        day, month, message = holiday
+        if today.month == month and today.day == day:
+            if day == 8 and month == 3:
+                message += combine_women_usernames()
+            elif day == 23 and month == 2:
+                message += combine_men_usernames()
+            else:
+                message += combine_usernames()
+            bot.send_message(chat_id=GROUP_CHAT_ID, text=message)
 
 
 def main():
@@ -120,8 +114,6 @@ def main():
         if now.hour == 14 and now.minute == 15:
             check_birthdays()
             check_holidays()
-            check_23_feb()
-            check_8_march()
             time.sleep(86400 - now.second)
 
 
