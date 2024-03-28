@@ -61,21 +61,12 @@ def check_birthdays():
                 bot.send_message(chat_id=GROUP_CHAT_ID, text=message)
 
 
-def combine_usernames():
+def combine_usernames(manSex):
     people = parse_birthdays()
-    all_usernames = ' '.join([username for name, username, dob, sex in people])
-    return all_usernames
-
-
-def combine_women_usernames():
-    people = parse_birthdays()
-    all_usernames = ' '.join([username for name, username, dob, sex in people if sex == 'f'])
-    return all_usernames
-
-
-def combine_men_usernames():
-    people = parse_birthdays()
-    all_usernames = ' '.join([username for name, username, dob, sex in people if sex == 'm'])
+    if manSex == 'm' or manSex == 'f':
+        all_usernames = ' '.join([username for name, username, dob, sex in people if sex == manSex])
+    else:
+        all_usernames = ' '.join([username for name, username, dob, sex in people if sex == manSex])
     return all_usernames
 
 
@@ -101,11 +92,11 @@ def check_holidays():
         message += ' '
         if today.month == month and today.day == day:
             if day == 8 and month == 3:
-                message += combine_women_usernames()
+                message += combine_usernames('f')
             elif day == 23 and month == 2:
-                message += combine_men_usernames()
+                message += combine_usernames('m')
             else:
-                message += combine_usernames()
+                message += combine_usernames('a')
             bot.send_message(chat_id=GROUP_CHAT_ID, text=message)
 
 
