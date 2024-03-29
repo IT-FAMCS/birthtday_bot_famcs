@@ -100,12 +100,13 @@ def check_holidays():
             bot.send_message(chat_id=GROUP_CHAT_ID, text=message)
 
 
+
+
 def main():
     while True:
         now = datetime.datetime.now()
         if now.hour == 14 and now.minute == 15:
             check_birthdays()
-            check_holidays()
             time.sleep(86400 - now.second)
 
 
