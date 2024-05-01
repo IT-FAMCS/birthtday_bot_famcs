@@ -61,6 +61,47 @@ def check_birthdays():
                 bot.send_message(chat_id=GROUP_CHAT_ID, text=message)
 
 
+def combine_usernames(manSex):
+    people = parse_birthdays()
+    if manSex == 'm' or manSex == 'f':
+        all_usernames = ' '.join([username for name, username, dob, sex in people if sex == manSex])
+    else:
+        all_usernames = ' '.join([username for name, username, dob, sex in people if sex == manSex])
+    return all_usernames
+
+
+holidays = [
+    [1, 9, 'С 1 сентября!'],
+    [9, 5, 'С 9 мая!'],
+    [1, 5, 'С 1 мая!'],
+    [5, 5, 'Счастливой пасхи!'],
+    [20, 6, 'С Ивана Купала!'],
+    [1, 4, 'С днем дурака!'],
+    [1, 1, 'С новым годом!'],
+    [7, 1, 'С православным рождеством!'],
+    [25, 12, 'С католическим рождеством!'],
+    [8, 3, 'С 8 марта!'],
+    [23, 2, 'С 23 февраля!']
+]
+
+
+def check_holidays():
+    today = datetime.datetime.now()
+    for holiday in holidays:
+        day, month, message = holiday
+        message += ' '
+        if today.month == month and today.day == day:
+            if day == 8 and month == 3:
+                message += combine_usernames('f')
+            elif day == 23 and month == 2:
+                message += combine_usernames('m')
+            else:
+                message += combine_usernames('a')
+            bot.send_message(chat_id=GROUP_CHAT_ID, text=message)
+
+
+
+
 def main():
     while True:
         now = datetime.datetime.now()
