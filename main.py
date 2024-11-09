@@ -4,6 +4,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 import datetime
 import time
 from random import randint
+import schedule
 
 
 TOKEN = ''
@@ -13,11 +14,12 @@ GROUP_CHAT_ID = ''
 scope = ['https://spreadsheets.google.com/feeds',
          'https://www.googleapis.com/auth/drive']
 
-credentials = ServiceAccountCredentials.from_json_keyfile_name('', scope)
+credentials = ServiceAccountCredentials.from_json_keyfile_name(
+    '', scope)
 client = gspread.authorize(credentials)
 
 spreadsheet_id = ''
-sheet_name = 'Sheet1'
+sheet_name = ''
 
 bot = telebot.TeleBot(TOKEN)
 
@@ -33,7 +35,8 @@ def parse_birthdays():
 
     birthdays = []
     for row in data:
-        birthdays.append((row['Имя'], row['Телеграм'], row['Дата рождения'], row['Пол']))
+        birthdays.append((row['Имя'], row['Телеграм'],
+                         row['Дата рождения'], row['Пол']))
 
     return birthdays
 
@@ -45,16 +48,16 @@ message_men = ['''с днем рождения!!! Желаем стать мил
 И желаю сладко жить:
 В личной вилле на Багамах
 Коньячок французский пить.
-''','''С днем рождения, коллега! Пусть твоя жизнь будет наполнена радостью, успехами и счастьем!''',
-'''Счастья, здоровья и благополучия в новом году жизни! Пусть все твои мечты сбудутся!''',
-'''Поздравляю с днем рождения, коллега! Пусть этот день станет самым счастливым в твоей жизни!''',]
+''', '''С днем рождения, коллега! Пусть твоя жизнь будет наполнена радостью, успехами и счастьем!''',
+               '''Счастья, здоровья и благополучия в новом году жизни! Пусть все твои мечты сбудутся!''',
+               '''Поздравляю с днем рождения, коллега! Пусть этот день станет самым счастливым в твоей жизни!''',]
 message_women = ['''поздравляем с днем рождения  самую роскошную даму, 
 хотим пожелать только самого нужного, а именно папика на Порше и домик на Мальдивах! 
 Дамы на ФПМИ - большая редкость, 
 хотя бы по этой причине 
 мы очень дорожим тобой!''', '''с день рождения, желаю выебываться поменьше и жить скромнее: 
 на машине ездить без крыши, вино пить старое, а сыр есть с плесенью.''',
-''' Будь то невыспанные ночи перед сессиями или веселые вечеринки,  будь всегда на высоте и блистай, с днем рождения!!''']
+                 ''' Будь то невыспанные ночи перед сессиями или веселые вечеринки,  будь всегда на высоте и блистай, с днем рождения!!''']
 
 
 def check_birthdays():
@@ -79,9 +82,11 @@ def check_birthdays():
 def combine_usernames(manSex):
     people = parse_birthdays()
     if manSex == 'm' or manSex == 'f':
-        all_usernames = ' '.join([username for name, username, dob, sex in people if sex == manSex])
+        all_usernames = ' '.join(
+            [username for name, username, dob, sex in people if sex == manSex])
     else:
-        all_usernames = ' '.join([username for name, username, dob, sex in people if sex == manSex])
+        all_usernames = ' '.join(
+            [username for name, username, dob, sex in people if sex == manSex])
     return all_usernames
 
 
@@ -116,12 +121,21 @@ def check_holidays():
 
 
 def main():
+    schedule.every().day.at("04:00").do(check_birthdays)
+    schedule.every().day.at("04:00").do(check_holidays)
+
     while True:
-        now = datetime.datetime.now()
-        if now.hour == 4 and now.minute == 0:
-            check_birthdays()
-            check_holidays()
-            time.sleep(86400 - now.second)
+        schedule.run_pending()
+        time.sleep(60)
+
+# def main():
+#     while True:
+#         now = datetime.datetime.now()
+#         print(now.hour, now.minute)
+#         if now.hour == 1 and now.minute == 10:
+#             check_birthdays()
+#             check_holidays()
+#             time.sleep(86400 - now.second)
 
 
 if __name__ == '__main__':
